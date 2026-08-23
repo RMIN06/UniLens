@@ -16,9 +16,9 @@ export function Footer({ className }: FooterProps) {
   const currentYear = new Date().getFullYear();
 
   const navLinks = [
-    { label: 'About', href: '#about' },
+    { label: 'Universities', href: '#universities' },
     { label: 'How It Works', href: '#how-it-works' },
-    { label: 'Why Real Experience', href: '#value-prop' },
+    { label: 'Why Real Experience', href: '#why-experience' },
     { label: 'Ranking Methodology', href: '#ranking-table' },
   ];
 

@@ -32,7 +32,7 @@ export function Navbar({ className }: NavbarProps) {
     { label: 'Universities', href: '#universities' },
     { label: 'How It Works', href: '#how-it-works' },
     { label: 'Why Experience', href: '#why-experience' },
-    { label: 'Rankings', href: '#rankings' },
+    { label: 'Rankings', href: '#ranking-table' },
   ];
 
   if (!mounted) {

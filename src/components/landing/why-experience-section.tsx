@@ -4,6 +4,7 @@ import { motion, useScroll, useTransform, useInView } from 'framer-motion'
 import { useRef, useEffect } from 'react'
 import { BarChart2, Shield, Eye, Users, Award, MessageSquare, ArrowRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import Link from 'next/link'
 
 interface WhyExperienceSectionProps {
   className?: string
@@ -369,35 +370,42 @@ export function WhyExperienceSection({ className }: WhyExperienceSectionProps) {
             Join thousands of Pakistani students making university decisions based on experience, not marketing.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button className={cn(
-              'px-8 py-4',
-              'bg-accent text-accent-foreground',
-              'font-ui text-label uppercase tracking-wider',
-              'rounded-lg',
-              'transition-all duration-normal ease-out',
-              'hover:bg-accent/90',
-              'active:scale-[0.98]',
-              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-primary',
-              'min-h-[52px] touch-manipulation',
-              'w-full sm:w-auto'
-            )}>
+            <Link
+              href="#universities"
+              className={cn(
+                'px-8 py-4',
+                'bg-accent text-accent-foreground',
+                'font-ui text-label uppercase tracking-wider',
+                'rounded-lg',
+                'transition-all duration-normal ease-out',
+                'hover:bg-accent/90',
+                'active:scale-[0.98]',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-primary',
+                'min-h-[52px] touch-manipulation',
+                'w-full sm:w-auto',
+                'inline-flex items-center justify-center gap-2'
+              )}
+            >
               Start exploring universities
-              <ArrowRight className="ml-3 inline-block w-5 h-5" aria-hidden="true" />
-            </button>
-            <button className={cn(
-              'px-8 py-4',
-              'bg-transparent text-primary-foreground border-2 border-primary-foreground/30',
-              'font-ui text-label uppercase tracking-wider',
-              'rounded-lg',
-              'transition-all duration-normal ease-out',
-              'hover:border-primary-foreground hover:bg-primary-foreground/10',
-              'active:scale-[0.98]',
-              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-primary',
-              'min-h-[52px] touch-manipulation',
-              'w-full sm:w-auto'
-            )}>
+              <ArrowRight className="w-5 h-5" aria-hidden="true" />
+            </Link>
+            <Link
+              href="/signup"
+              className={cn(
+                'px-8 py-4',
+                'bg-transparent text-primary-foreground border-2 border-primary-foreground/30',
+                'font-ui text-label uppercase tracking-wider',
+                'rounded-lg',
+                'transition-all duration-normal ease-out',
+                'hover:border-primary-foreground hover:bg-primary-foreground/10',
+                'active:scale-[0.98]',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-primary',
+                'min-h-[52px] touch-manipulation',
+                'w-full sm:w-auto'
+              )}
+            >
               Share my experience
-            </button>
+            </Link>
           </div>
         </motion.div>
       </div>
