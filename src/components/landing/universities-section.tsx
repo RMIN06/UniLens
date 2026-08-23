@@ -33,6 +33,9 @@ export function UniversitiesSection({ className }: UniversitiesSectionProps) {
   const [newName, setNewName] = useState('');
   const [newCity, setNewCity] = useState('');
   const [newType, setNewType] = useState<'Public' | 'Private'>('Public');
+  const [showAll, setShowAll] = useState(false);
+
+  const PREVIEW_COUNT = 5;
 
   useEffect(() => {
     try {
@@ -58,6 +61,14 @@ export function UniversitiesSection({ className }: UniversitiesSectionProps) {
       return true;
     });
   }, [allUniversities, search, categoryFilter, typeFilter]);
+
+  const isDefaultView =
+    !search.trim() && categoryFilter === 'All' && typeFilter === 'All';
+
+  const visible = useMemo(() => {
+    if (isDefaultView && !showAll) return filtered.slice(0, PREVIEW_COUNT);
+    return filtered;
+  }, [filtered, isDefaultView, showAll]);
 
   const handleAddUniversity = () => {
     const name = newName.trim();
@@ -124,7 +135,7 @@ export function UniversitiesSection({ className }: UniversitiesSectionProps) {
             Top 100 Pakistani Universities
           </h2>
           <p className="mt-4 font-body text-body-lg text-muted-foreground max-w-xl mx-auto text-balance">
-            Browse HEC-recognized universities across Pakistan. Can&apos;t find yours? Add it to the list.
+            Browse HEC-recognized universities across Pakistan. Use search and filters to explore the full list — or add yours if it&apos;s missing.
           </p>
         </motion.div>
 
@@ -299,12 +310,12 @@ export function UniversitiesSection({ className }: UniversitiesSectionProps) {
 
         {/* Results count */}
         <p className="mb-4 font-ui text-body-sm text-muted-foreground" role="status">
-          Showing {filtered.length} of {allUniversities.length} universities
+          Showing {visible.length} of {allUniversities.length} universities
         </p>
 
         {/* University Grid */}
         <div ref={gridRef} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
-          {filtered.map((u, index) => (
+          {visible.map((u, index) => (
             <motion.article
               key={u.id}
               tabIndex={0}
@@ -349,8 +360,29 @@ export function UniversitiesSection({ className }: UniversitiesSectionProps) {
           ))}
         </div>
 
+        {/* Show all toggle */}
+        {isDefaultView && filtered.length > PREVIEW_COUNT && (
+          <div className="mt-8 text-center">
+            <button
+              onClick={() => setShowAll(!showAll)}
+              aria-expanded={showAll}
+              className={cn(
+                'inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-lg font-ui text-label min-h-[48px]',
+                'border border-border bg-card text-foreground',
+                'hover:border-accent/40 hover:text-accent transition-all duration-fast active:scale-[0.98]'
+              )}
+            >
+              {showAll ? (
+                'Show top 5 only'
+              ) : (
+                `Show all ${filtered.length} universities`
+              )}
+            </button>
+          </div>
+        )}
+
         {/* Empty state */}
-        {filtered.length === 0 && (
+        {visible.length === 0 && (
           <div className="py-16 text-center">
             <GraduationCap className="w-12 h-12 mx-auto text-muted-foreground/40 mb-4" aria-hidden="true" />
             <h3 className="font-display text-heading-md text-foreground mb-2">
@@ -364,6 +396,7 @@ export function UniversitiesSection({ className }: UniversitiesSectionProps) {
                 setSearch('');
                 setCategoryFilter('All');
                 setTypeFilter('All');
+                setShowAll(false);
                 setShowAddForm(true);
               }}
               className="btn-splash inline-flex items-center gap-2 px-6 py-3 rounded-lg font-ui text-label text-accent-foreground"
