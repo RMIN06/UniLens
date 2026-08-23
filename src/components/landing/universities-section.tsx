@@ -1,17 +1,11 @@
 'use client';
 
 import { motion, useInView } from 'framer-motion';
-import { useRef, useEffect, useMemo, useState } from 'react';
+import { useRef, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Search, Plus, GraduationCap, MapPin, Building2, X } from 'lucide-react';
+import { Search, GraduationCap, MapPin, Building2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import {
-  topPakistaniUniversities,
-  toUniversity,
-  type University,
-} from '@/lib/universities-data';
-
-const STORAGE_KEY = 'unilens-user-universities';
+import { topPakistaniUniversities } from '@/lib/universities-data';
 
 interface UniversitiesSectionProps {
   className?: string;
@@ -25,42 +19,22 @@ export function UniversitiesSection({ className }: UniversitiesSectionProps) {
   const isInView = useInView(sectionRef, { once: true, margin: '-100px' });
   const gridInView = useInView(gridRef, { once: true, margin: '-100px' });
 
-  const [userUniversities, setUserUniversities] = useState<University[]>([]);
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [typeFilter, setTypeFilter] = useState<'All' | 'Public' | 'Private'>('All');
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [newName, setNewName] = useState('');
-  const [newCity, setNewCity] = useState('');
-  const [newType, setNewType] = useState<'Public' | 'Private'>('Public');
   const [showAll, setShowAll] = useState(false);
 
   const PREVIEW_COUNT = 5;
 
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        setUserUniversities(JSON.parse(stored));
-      }
-    } catch {
-      // ignore corrupted storage
-    }
-  }, []);
-
-  const allUniversities = useMemo(() => {
-    return [...userUniversities.map((u, i) => ({ ...u, ranking: u.ranking ?? topPakistaniUniversities.length + i + 1 })), ...topPakistaniUniversities];
-  }, [userUniversities]);
-
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return allUniversities.filter((u) => {
+    return topPakistaniUniversities.filter((u) => {
       if (q && !u.name.toLowerCase().includes(q) && !u.city.toLowerCase().includes(q)) return false;
       if (categoryFilter !== 'All' && u.category !== categoryFilter) return false;
       if (typeFilter !== 'All' && u.type !== typeFilter) return false;
       return true;
     });
-  }, [allUniversities, search, categoryFilter, typeFilter]);
+  }, [search, categoryFilter, typeFilter]);
 
   const isDefaultView =
     !search.trim() && categoryFilter === 'All' && typeFilter === 'All';
@@ -69,42 +43,6 @@ export function UniversitiesSection({ className }: UniversitiesSectionProps) {
     if (isDefaultView && !showAll) return filtered.slice(0, PREVIEW_COUNT);
     return filtered;
   }, [filtered, isDefaultView, showAll]);
-
-  const handleAddUniversity = () => {
-    const name = newName.trim();
-    const city = newCity.trim() || 'Pakistan';
-    if (!name) return;
-
-    const exists = allUniversities.some(
-      (u) => u.name.toLowerCase() === name.toLowerCase()
-    );
-    if (exists) {
-      setSearch(name);
-      setShowAddForm(false);
-      setNewName('');
-      setNewCity('');
-      return;
-    }
-
-    const university = toUniversity({
-      name,
-      city,
-      type: newType,
-      category: 'General',
-      ranking: null,
-    });
-
-    const updated = [university, ...userUniversities];
-    setUserUniversities(updated);
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-    } catch {
-      // storage unavailable
-    }
-    setShowAddForm(false);
-    setNewName('');
-    setNewCity('');
-  };
 
   return (
     <section
@@ -135,7 +73,7 @@ export function UniversitiesSection({ className }: UniversitiesSectionProps) {
             Top 100 Pakistani Universities
           </h2>
           <p className="mt-4 font-body text-body-lg text-muted-foreground max-w-xl mx-auto text-balance">
-            Browse HEC-recognized universities across Pakistan. Use search and filters to explore the full list — or add yours if it&apos;s missing.
+            Browse HEC-recognized universities across Pakistan. Use search and filters to explore the full list.
           </p>
         </motion.div>
 
@@ -185,31 +123,6 @@ export function UniversitiesSection({ className }: UniversitiesSectionProps) {
                 </button>
               ))}
             </div>
-
-            {/* Add University button */}
-            <button
-              onClick={() => setShowAddForm(!showAddForm)}
-              aria-expanded={showAddForm}
-              className={cn(
-                'inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-ui text-label min-h-[48px]',
-                'transition-all duration-fast active:scale-[0.98]',
-                showAddForm
-                  ? 'bg-muted text-muted-foreground border border-border'
-                  : 'btn-splash text-accent-foreground'
-              )}
-            >
-              {showAddForm ? (
-                <>
-                  <X className="w-4 h-4" aria-hidden="true" />
-                  Cancel
-                </>
-              ) : (
-                <>
-                  <Plus className="w-4 h-4" aria-hidden="true" />
-                  Add University
-                </>
-              )}
-            </button>
           </div>
 
           {/* Category filter pills */}
@@ -231,86 +144,11 @@ export function UniversitiesSection({ className }: UniversitiesSectionProps) {
               </button>
             ))}
           </div>
-
-          {/* Add University Form */}
-          {showAddForm && (
-            <motion.div
-              className="p-6 bg-card border border-border rounded-xl space-y-4"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3, ease: 'easeInOut' }}
-            >
-              <h3 className="font-display text-heading-sm text-foreground">
-                Add a new university
-              </h3>
-              <div className="grid sm:grid-cols-3 gap-3">
-                <input
-                  type="text"
-                  value={newName}
-                  onChange={(e) => setNewName(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleAddUniversity()}
-                  placeholder="University name *"
-                  aria-label="University name"
-                  className={cn(
-                    'sm:col-span-2 px-4 py-2.5 rounded-lg',
-                    'bg-background border border-border',
-                    'font-body text-body-md text-foreground placeholder:text-muted-foreground/60',
-                    'focus:outline-none focus:ring-2 focus:ring-ring focus:border-accent/50'
-                  )}
-                />
-                <input
-                  type="text"
-                  value={newCity}
-                  onChange={(e) => setNewCity(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleAddUniversity()}
-                  placeholder="City"
-                  aria-label="City"
-                  className={cn(
-                    'px-4 py-2.5 rounded-lg',
-                    'bg-background border border-border',
-                    'font-body text-body-md text-foreground placeholder:text-muted-foreground/60',
-                    'focus:outline-none focus:ring-2 focus:ring-ring focus:border-accent/50'
-                  )}
-                />
-              </div>
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="flex gap-2">
-                  {(['Public', 'Private'] as const).map((t) => (
-                    <button
-                      key={t}
-                      onClick={() => setNewType(t)}
-                      aria-pressed={newType === t}
-                      className={cn(
-                        'px-4 py-1.5 rounded-full font-ui text-label border transition-colors',
-                        newType === t
-                          ? 'bg-accent-muted text-accent border-accent/50'
-                          : 'text-muted-foreground border-border hover:text-foreground'
-                      )}
-                    >
-                      {t}
-                    </button>
-                  ))}
-                </div>
-                <button
-                  onClick={handleAddUniversity}
-                  disabled={!newName.trim()}
-                  className={cn(
-                    'btn-splash inline-flex items-center gap-2 px-6 py-2.5 rounded-lg font-ui text-label text-accent-foreground',
-                    'disabled:opacity-50 disabled:cursor-not-allowed',
-                    'min-h-[44px]'
-                  )}
-                >
-                  <span className="btn-content">Add to list</span>
-                </button>
-              </div>
-            </motion.div>
-          )}
         </motion.div>
 
         {/* Results count */}
         <p className="mb-4 font-ui text-body-sm text-muted-foreground" role="status">
-          Showing {visible.length} of {allUniversities.length} universities
+          Showing {visible.length} of {topPakistaniUniversities.length} universities
         </p>
 
         {/* University Grid */}
@@ -389,7 +227,7 @@ export function UniversitiesSection({ className }: UniversitiesSectionProps) {
               No universities found
             </h3>
             <p className="font-body text-body-md text-muted-foreground max-w-md mx-auto mb-6">
-              Try a different search term or filter — or add this university to the list yourself.
+              Try a different search term or filter to find what you&apos;re looking for.
             </p>
             <button
               onClick={() => {
@@ -397,14 +235,10 @@ export function UniversitiesSection({ className }: UniversitiesSectionProps) {
                 setCategoryFilter('All');
                 setTypeFilter('All');
                 setShowAll(false);
-                setShowAddForm(true);
               }}
               className="btn-splash inline-flex items-center gap-2 px-6 py-3 rounded-lg font-ui text-label text-accent-foreground"
             >
-              <span className="btn-content inline-flex items-center gap-2">
-                <Plus className="w-4 h-4" aria-hidden="true" />
-                Add it to the list
-              </span>
+              <span className="btn-content">Clear search &amp; filters</span>
             </button>
           </div>
         )}
