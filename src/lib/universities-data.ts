@@ -5,6 +5,7 @@ export interface University {
   type: 'Public' | 'Private';
   category: string;
   ranking: number | null;
+  campuses?: string[];
 }
 
 function slugify(name: string): string {
@@ -20,16 +21,16 @@ export function toUniversity(u: Omit<University, 'id'>): University {
 
 const rawUniversities: Omit<University, 'id'>[] = [
   { name: 'Quaid-i-Azam University', city: 'Islamabad', type: 'Public', category: 'General', ranking: 1 },
-  { name: 'National University of Sciences and Technology (NUST)', city: 'Islamabad', type: 'Public', category: 'Engineering & IT', ranking: 2 },
+  { name: 'National University of Sciences and Technology (NUST)', city: 'Islamabad', type: 'Public', category: 'Engineering & IT', ranking: 2, campuses: ['Islamabad (H-12 Main Campus)', 'Rawalpindi', 'Risalpur', 'Karachi', 'Quetta'] },
   { name: 'Pakistan Institute of Engineering and Applied Sciences (PIEAS)', city: 'Islamabad', type: 'Public', category: 'Engineering & IT', ranking: 3 },
-  { name: 'Lahore University of Management Sciences (LUMS)', city: 'Lahore', type: 'Private', category: 'Business & Management', ranking: 4 },
+  { name: 'Lahore University of Management Sciences (LUMS)', city: 'Lahore', type: 'Private', category: 'Business & Management', ranking: 4, campuses: ['Lahore (Main Campus)'] },
   { name: 'University of the Punjab', city: 'Lahore', type: 'Public', category: 'General', ranking: 5 },
-  { name: 'Aga Khan University', city: 'Karachi', type: 'Private', category: 'Medical', ranking: 6 },
+  { name: 'Aga Khan University', city: 'Karachi', type: 'Private', category: 'Medical', ranking: 6, campuses: ['Karachi (Stadium Road Main Campus)', 'Karachi (Hospital Campus)', 'Nairobi', 'Dar es Salaam', 'Kampala'] },
   { name: 'University of Karachi', city: 'Karachi', type: 'Public', category: 'General', ranking: 7 },
   { name: 'University of Agriculture, Faisalabad', city: 'Faisalabad', type: 'Public', category: 'Agriculture', ranking: 8 },
-  { name: 'COMSATS University Islamabad', city: 'Islamabad', type: 'Public', category: 'Engineering & IT', ranking: 9 },
+  { name: 'COMSATS University Islamabad', city: 'Islamabad', type: 'Public', category: 'Engineering & IT', ranking: 9, campuses: ['Islamabad', 'Abbottabad', 'Wah', 'Attock', 'Lahore', 'Sahiwal', 'Vehari'] },
   { name: 'Ghulam Ishaq Khan Institute of Engineering Sciences and Technology (GIK)', city: 'Topi', type: 'Private', category: 'Engineering & IT', ranking: 10 },
-  { name: 'University of Engineering and Technology, Lahore', city: 'Lahore', type: 'Public', category: 'Engineering & IT', ranking: 11 },
+  { name: 'University of Engineering and Technology, Lahore', city: 'Lahore', type: 'Public', category: 'Engineering & IT', ranking: 11, campuses: ['Lahore (Main Campus)', 'Kala Shah Kaku New Campus', 'Narowal', 'Faisalabad RCET'] },
   { name: 'Institute of Business Administration (IBA), Karachi', city: 'Karachi', type: 'Public', category: 'Business & Management', ranking: 12 },
   { name: 'Dow University of Health Sciences', city: 'Karachi', type: 'Public', category: 'Medical', ranking: 13 },
   { name: 'University of Peshawar', city: 'Peshawar', type: 'Public', category: 'General', ranking: 14 },
@@ -47,7 +48,7 @@ const rawUniversities: Omit<University, 'id'>[] = [
   { name: 'Riphah International University', city: 'Islamabad', type: 'Private', category: 'Medical', ranking: 26 },
   { name: 'University of Central Punjab', city: 'Lahore', type: 'Private', category: 'General', ranking: 27 },
   { name: 'University of Lahore', city: 'Lahore', type: 'Private', category: 'Medical', ranking: 28 },
-  { name: 'National University of Computer and Emerging Sciences (FAST-NUCES)', city: 'Islamabad', type: 'Private', category: 'Engineering & IT', ranking: 29 },
+  { name: 'National University of Computer and Emerging Sciences (FAST-NUCES)', city: 'Islamabad', type: 'Private', category: 'Engineering & IT', ranking: 29, campuses: ['Islamabad', 'Karachi', 'Lahore', 'Faisalabad', 'Multan', 'Peshawar'] },
   { name: 'Sir Syed CASE Institute of Technology', city: 'Islamabad', type: 'Private', category: 'Engineering & IT', ranking: 30 },
   { name: 'Capital University of Science and Technology', city: 'Islamabad', type: 'Private', category: 'Engineering & IT', ranking: 31 },
   { name: 'Bahauddin Zakariya University', city: 'Multan', type: 'Public', category: 'General', ranking: 32 },
@@ -122,3 +123,44 @@ const rawUniversities: Omit<University, 'id'>[] = [
 ];
 
 export const topPakistaniUniversities: University[] = rawUniversities.map(toUniversity);
+
+const FEATURED_NAMES = [
+  'National University of Computer and Emerging Sciences (FAST-NUCES)',
+  'National University of Sciences and Technology (NUST)',
+  'Aga Khan University',
+  'Lahore University of Management Sciences (LUMS)',
+  'University of Engineering and Technology, Lahore',
+];
+
+export const featuredUniversities: University[] = FEATURED_NAMES.map(
+  (name) => topPakistaniUniversities.find((u) => u.name === name)!
+).filter(Boolean);
+
+export function searchUniversities(query: string): University[] {
+  const q = query.trim().toLowerCase();
+  if (!q) return [];
+  return topPakistaniUniversities.filter(
+    (u) => u.name.toLowerCase().includes(q) || u.city.toLowerCase().includes(q)
+  );
+}
+
+export function findUniversityByName(name: string): University | undefined {
+  const q = name.trim().toLowerCase();
+  if (!q) return undefined;
+  return topPakistaniUniversities.find(
+    (u) =>
+      u.name.toLowerCase() === q ||
+      u.name.toLowerCase().includes(q) ||
+      q.includes(shortName(u))
+  );
+}
+
+function shortName(u: University): string {
+  const match = u.name.match(/\(([^)]+)\)/);
+  if (match) return match[1].toLowerCase();
+  return u.name
+    .split(' ')
+    .filter((w) => w.length > 2 && w === w.toUpperCase())
+    .join(' ')
+    .toLowerCase();
+}

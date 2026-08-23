@@ -2,8 +2,10 @@
 
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
-import { GitBranch, X, Link, Mail } from 'lucide-react';
+import Link from 'next/link';
+import { GitBranch, X, Link as LinkIcon, Mail } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { CookiePreferencesButton } from '@/components/landing/cookie-preferences';
 
 interface FooterProps {
   className?: string;
@@ -22,23 +24,10 @@ export function Footer({ className }: FooterProps) {
     { label: 'Ranking Methodology', href: '#ranking-table' },
   ];
 
-  const resourceLinks = [
-    { label: 'Student Stories', href: '#' },
-    { label: 'University Guides', href: '#' },
-    { label: 'Career Outcomes', href: '#' },
-    { label: 'Help Center', href: '#' },
-  ];
-
-  const legalLinks = [
-    { label: 'Privacy', href: '#' },
-    { label: 'Terms', href: '#' },
-    { label: 'Accessibility', href: '#' },
-  ];
-
   const socialLinks = [
     { icon: X, label: 'X', href: '#' },
     { icon: GitBranch, label: 'GitHub', href: '#' },
-    { icon: Link, label: 'LinkedIn', href: '#' },
+    { icon: LinkIcon, label: 'LinkedIn', href: '#' },
     { icon: Mail, label: 'Email', href: 'mailto:hello@unilens.app' },
   ];
 
@@ -54,13 +43,13 @@ export function Footer({ className }: FooterProps) {
     >
       <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-12 md:py-16 lg:py-20">
         <motion.div
-          className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 mb-10 lg:mb-12"
+          className="grid md:grid-cols-2 gap-8 md:gap-12 mb-10 lg:mb-12"
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.6, ease: 'easeOut' }}
         >
           {/* Brand */}
-          <div className="md:col-span-2 lg:col-span-1">
+          <div className="md:col-span-2">
             <h2
               id="footer-heading"
               className="flex items-center gap-2 font-display text-heading-md text-foreground mb-4"
@@ -116,25 +105,6 @@ export function Footer({ className }: FooterProps) {
               ))}
             </ul>
           </nav>
-
-          {/* Resources */}
-          <nav aria-label="Resources">
-            <h3 className="font-ui text-label text-foreground uppercase tracking-wider mb-4">
-              Resources
-            </h3>
-            <ul className="space-y-3" role="list">
-              {resourceLinks.map((link) => (
-                <li key={link.label}>
-                  <a
-                    href={link.href}
-                    className="font-body text-body-md text-muted-foreground hover:text-foreground hover:text-accent transition-colors duration-fast"
-                  >
-                    {link.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
         </motion.div>
 
         {/* Bottom Bar */}
@@ -147,16 +117,32 @@ export function Footer({ className }: FooterProps) {
           <p className="font-body text-body-sm text-muted-foreground">
             © {currentYear} UniLens. All rights reserved.
           </p>
-          <div className="flex items-center gap-6">
-            {legalLinks.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                className="font-body text-body-sm text-muted-foreground hover:text-foreground hover:text-accent transition-colors duration-fast"
-              >
-                {link.label}
-              </a>
-            ))}
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+            <Link
+              href="/faq"
+              className="font-body text-body-sm text-muted-foreground hover:text-foreground hover:text-accent transition-colors duration-fast"
+            >
+              FAQ
+            </Link>
+            <Link
+              href="/privacy"
+              className="font-body text-body-sm text-muted-foreground hover:text-foreground hover:text-accent transition-colors duration-fast"
+            >
+              Privacy
+            </Link>
+            <Link
+              href="/terms"
+              className="font-body text-body-sm text-muted-foreground hover:text-foreground hover:text-accent transition-colors duration-fast"
+            >
+              Terms
+            </Link>
+            <Link
+              href="/accessibility"
+              className="font-body text-body-sm text-muted-foreground hover:text-foreground hover:text-accent transition-colors duration-fast"
+            >
+              Accessibility
+            </Link>
+            <CookiePreferencesButton />
           </div>
         </motion.div>
       </div>
