@@ -61,7 +61,17 @@ export function Footer({ className }: FooterProps) {
         >
           {/* Brand */}
           <div className="md:col-span-2 lg:col-span-1">
-            <h2 id="footer-heading" className="font-display text-heading-md text-foreground mb-4">
+            <h2
+              id="footer-heading"
+              className="flex items-center gap-2 font-display text-heading-md text-foreground mb-4"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/logo.png"
+                alt=""
+                className="h-8 w-8 rounded-lg object-contain"
+                aria-hidden="true"
+              />
               UniLens
             </h2>
             <p className="font-body text-body-md text-muted-foreground max-w-sm leading-relaxed mb-6">

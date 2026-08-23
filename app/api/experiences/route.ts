@@ -1,55 +1,10 @@
-import { z } from "zod";
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { User } from "@/lib/db/models/user";
 import { Experience } from "@/lib/db/models/experience";
 import { connectMongoose } from "@/lib/db/mongoose";
 import { rateLimit, getClientIp } from "@/lib/auth/rate-limit";
-
-const rating = z.number().int().min(1).max(10);
-
-export const experienceSchema = z.object({
-  title: z.string().trim().min(10, "Give your experience a short title (10+ characters)").max(120),
-  overallRating: rating,
-  recommendation: z.enum([
-    "highly-recommend",
-    "recommend",
-    "neutral",
-    "not-recommended",
-  ]),
-  wouldChooseAgain: z.enum(["yes", "maybe", "no"]).nullable().optional(),
-  categoryRatings: z
-    .object({
-      academics: rating.optional(),
-      campusLife: rating.optional(),
-      facilities: rating.optional(),
-      societies: rating.optional(),
-    })
-    .optional(),
-  story: z
-    .string()
-    .trim()
-    .min(150, "Tell us more — at least 150 characters. Detailed reviews help juniors the most.")
-    .max(5000),
-  pros: z.array(z.string().trim().min(2).max(150)).max(5).optional(),
-  cons: z.array(z.string().trim().min(2).max(150)).max(5).optional(),
-  advice: z.string().trim().max(1500).optional(),
-  outcome: z
-    .object({
-      status: z.enum([
-        "employed",
-        "higher-study",
-        "entrepreneurship",
-        "still-searching",
-        "other",
-      ]),
-      details: z.string().trim().max(800).optional(),
-      fieldRelevance: z.enum(["directly", "partially", "not"]),
-    })
-    .nullable()
-    .optional(),
-  anonymous: z.boolean().optional(),
-});
+import { experienceSchema } from "@/lib/experience-schema";
 
 function escapeRegex(input: string): string {
   return input.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -77,12 +32,16 @@ export async function GET(request: Request) {
   const program = url.searchParams.get("program")?.trim().slice(0, 120);
   const sort = url.searchParams.get("sort") ?? "recent";
   const mine = url.searchParams.get("mine") === "true";
+  const authorParam = url.searchParams.get("author");
   const page = Math.max(1, Math.min(50, Number(url.searchParams.get("page")) || 1));
   const limit = mine ? 50 : 12;
 
   const query: Record<string, unknown> = {};
   if (mine) {
     query.author = session.user.id;
+  } else if (authorParam && /^[a-f\d]{24}$/i.test(authorParam)) {
+    // Experiences of a specific (anonymous) profile
+    query.author = authorParam;
   } else {
     if (level === "undergraduate" || level === "graduate") query.academicLevel = level;
     if (university) query.university = new RegExp(escapeRegex(university), "i");
@@ -106,20 +65,10 @@ export async function GET(request: Request) {
     Experience.countDocuments(query),
   ]);
 
-  // Resolve display names while respecting anonymity + privacy (no emails)
-  const authorIds = docs.map((d) => d.author);
-  const authors = await User.find({ _id: { $in: authorIds } })
-    .select("name academicLevel")
-    .lean();
-  const authorMap = new Map(
-    authors.map((a) => [String(a._id), a.name as string])
-  );
-
+  // Fully anonymous — never expose the author's identity, even to themselves in browse view
   const experiences = docs.map((d) => ({
     id: String(d._id),
-    displayName: d.anonymous
-      ? `Anonymous ${d.academicLevel === "graduate" ? "Graduate" : "Undergraduate"}`
-      : maskName(authorMap.get(String(d.author)) ?? "Student"),
+    displayName: `Anonymous ${d.academicLevel === "graduate" ? "Graduate" : "Undergraduate"}`,
     isOwn: String(d.author) === session.user.id,
     academicLevel: d.academicLevel,
     university: d.university,
@@ -146,12 +95,6 @@ export async function GET(request: Request) {
     page,
     hasMore: page * limit < total,
   });
-}
-
-function maskName(fullName: string): string {
-  const parts = fullName.trim().split(/\s+/);
-  if (parts.length === 1) return parts[0];
-  return `${parts[0]} ${parts[parts.length - 1].charAt(0).toUpperCase()}.`;
 }
 
 export async function POST(request: Request) {
@@ -210,7 +153,8 @@ export async function POST(request: Request) {
     university: user.university,
     program: user.program,
     graduationYear: user.graduationYear ?? null,
-    anonymous: data.anonymous ?? false,
+    // All experiences are anonymous — always
+    anonymous: true,
   });
 
   return NextResponse.json(

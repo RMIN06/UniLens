@@ -74,9 +74,13 @@ export function Navbar({ className }: NavbarProps) {
             className="flex items-center gap-2 font-display text-heading-md text-foreground hover:opacity-80 transition-opacity"
             aria-label="UniLens Home"
           >
-            <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center">
-              <GraduationCap className="w-5 h-5 text-primary-foreground" aria-hidden="true" />
-            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/logo.png"
+              alt="UniLens logo"
+              className="w-9 h-9 rounded-xl object-contain"
+              aria-hidden="true"
+            />
             <span className="hidden sm:block font-semibold">UniLens</span>
           </Link>
 

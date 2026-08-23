@@ -77,7 +77,6 @@ export function ExperienceForm({
   const [fieldRelevance, setFieldRelevance] = useState(
     initial?.outcome?.fieldRelevance ?? ''
   )
-  const [anonymous, setAnonymous] = useState(initial?.anonymous ?? true)
   const [status, setStatus] = useState<'idle' | 'loading'>('idle')
   const [error, setError] = useState<string | null>(null)
 
@@ -185,7 +184,7 @@ export function ExperienceForm({
                 fieldRelevance,
               }
             : null,
-        anonymous,
+        anonymous: true,
       }
 
       const res = await fetch(
@@ -520,19 +519,11 @@ export function ExperienceForm({
           aria-hidden="true"
         />
         <div>
-          <label className="cursor-pointer font-ui text-sm font-medium text-foreground">
-            <input
-              type="checkbox"
-              checked={anonymous}
-              onChange={(e) => setAnonymous(e.target.checked)}
-              className="mr-2.5 h-4 w-4 cursor-pointer accent-[#2563EB]"
-            />
-            Post anonymously
-          </label>
+          <p className="font-ui text-sm font-medium text-foreground">
+            Always anonymous
+          </p>
           <p className="text-body-sm mt-1 text-muted-foreground">
-            {anonymous
-              ? 'Shown as "Anonymous Undergraduate/Graduate". Only you can see and manage this post.'
-              : 'Your first name and last initial will be shown, e.g. "Ayesha K.". Your email is never public.'}
+            Shown as &ldquo;Anonymous Undergraduate/Graduate&rdquo;. Only you can see and manage this post.
           </p>
         </div>
       </section>

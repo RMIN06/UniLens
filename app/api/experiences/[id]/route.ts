@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { Experience } from "@/lib/db/models/experience";
 import { connectMongoose } from "@/lib/db/mongoose";
-import { experienceSchema } from "@/app/api/experiences/route";
+import { experienceSchema } from "@/lib/experience-schema";
 
 export async function PATCH(
   request: Request,
@@ -55,7 +55,8 @@ export async function PATCH(
   } else if (existing.academicLevel !== "graduate") {
     existing.outcome = null;
   }
-  existing.anonymous = data.anonymous ?? false;
+  // All experiences are anonymous — always
+  existing.anonymous = true;
   existing.editedAt = new Date();
 
   await existing.save();

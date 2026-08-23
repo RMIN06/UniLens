@@ -8,9 +8,9 @@ function escapeRegex(input: string): string {
   return input.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-// Public profile fields only — never expose email, grades, or contact info
+// Public profile fields only — never expose name, image, email, grades, or contact info
 const PUBLIC_FIELDS =
-  "name image academicLevel university program graduationYear higherStream createdAt" as const;
+  "academicLevel university program graduationYear higherStream createdAt" as const;
 
 export async function GET(request: Request) {
   const session = await auth();
@@ -45,7 +45,7 @@ export async function GET(request: Request) {
   if (program) query.program = new RegExp(escapeRegex(program), "i");
   if (q) {
     const rx = new RegExp(escapeRegex(q), "i");
-    query.$or = [{ name: rx }, { university: rx }, { program: rx }];
+    query.$or = [{ university: rx }, { program: rx }];
   }
 
   const [users, total] = await Promise.all([
@@ -61,8 +61,6 @@ export async function GET(request: Request) {
   return NextResponse.json({
     users: users.map((u) => ({
       id: String(u._id),
-      name: u.name,
-      image: u.image ?? null,
       academicLevel: u.academicLevel,
       university: u.university,
       program: u.program,

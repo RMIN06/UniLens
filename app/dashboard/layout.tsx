@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import { GraduationCap } from 'lucide-react'
 import { auth } from '@/auth'
 import { User } from '@/lib/db/models/user'
 import { connectMongoose } from '@/lib/db/mongoose'
@@ -42,7 +41,13 @@ export default async function DashboardLayout({
             href="/"
             className="flex cursor-pointer items-center gap-2 text-primary transition-opacity duration-[var(--duration-fast)] hover:opacity-80"
           >
-            <GraduationCap className="h-5 w-5" aria-hidden="true" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/logo.png"
+              alt=""
+              className="h-6 w-6 rounded-md object-contain"
+              aria-hidden="true"
+            />
             <span className="font-display text-xl font-semibold tracking-tight">
               UniLens
             </span>
