@@ -42,6 +42,65 @@ export type ExperienceFormInitial = {
 
 const SCALE = Array.from({ length: 10 }, (_, i) => i + 1)
 
+function ListEditor({
+  label,
+  items,
+  setItems,
+  placeholder,
+}: {
+  label: string
+  items: string[]
+  setItems: (v: string[]) => void
+  placeholder: string
+}) {
+  return (
+    <div>
+      <span className="text-label mb-1.5 block text-muted-foreground">
+        {label}{' '}
+        <span className="normal-case tracking-normal">
+          (up to {EXPERIENCE_MAX_LIST_ITEMS})
+        </span>
+      </span>
+      <ul className="space-y-2">
+        {items.map((item, i) => (
+          <li key={i} className="flex gap-2">
+            <input
+              type="text"
+              value={item}
+              maxLength={150}
+              onChange={(e) => {
+                const next = [...items]
+                next[i] = e.target.value
+                setItems(next)
+              }}
+              placeholder={placeholder}
+              className="w-full rounded-lg border border-border bg-background px-3 py-2.5 font-ui text-sm text-foreground placeholder:text-muted-foreground/60"
+            />
+            <button
+              type="button"
+              aria-label={`Remove ${label.toLowerCase()} item`}
+              onClick={() => setItems(items.filter((_, j) => j !== i))}
+              className="shrink-0 cursor-pointer rounded-lg border border-border px-2.5 text-muted-foreground transition-colors duration-[var(--duration-fast)] hover:bg-destructive/10 hover:text-destructive"
+            >
+              <X className="h-4 w-4" aria-hidden="true" />
+            </button>
+          </li>
+        ))}
+      </ul>
+      {items.length < EXPERIENCE_MAX_LIST_ITEMS && (
+        <button
+          type="button"
+          onClick={() => setItems([...items, ''])}
+          className="mt-2 flex cursor-pointer items-center gap-1.5 font-ui text-sm font-medium text-secondary transition-colors duration-[var(--duration-fast)] hover:text-primary"
+        >
+          <Plus className="h-4 w-4" aria-hidden="true" />
+          Add point
+        </button>
+      )}
+    </div>
+  )
+}
+
 export function ExperienceForm({
   initial,
   isGraduate,
@@ -98,65 +157,6 @@ export function ExperienceForm({
       fieldRelevance,
     ]
   )
-
-  function ListEditor({
-    label,
-    items,
-    setItems,
-    placeholder,
-  }: {
-    label: string
-    items: string[]
-    setItems: (v: string[]) => void
-    placeholder: string
-  }) {
-    return (
-      <div>
-        <span className="text-label mb-1.5 block text-muted-foreground">
-          {label}{' '}
-          <span className="normal-case tracking-normal">
-            (up to {EXPERIENCE_MAX_LIST_ITEMS})
-          </span>
-        </span>
-        <ul className="space-y-2">
-          {items.map((item, i) => (
-            <li key={i} className="flex gap-2">
-              <input
-                type="text"
-                value={item}
-                maxLength={150}
-                onChange={(e) => {
-                  const next = [...items]
-                  next[i] = e.target.value
-                  setItems(next)
-                }}
-                placeholder={placeholder}
-                className="w-full rounded-lg border border-border bg-background px-3 py-2.5 font-ui text-sm text-foreground placeholder:text-muted-foreground/60"
-              />
-              <button
-                type="button"
-                aria-label={`Remove ${label.toLowerCase()} item`}
-                onClick={() => setItems(items.filter((_, j) => j !== i))}
-                className="shrink-0 cursor-pointer rounded-lg border border-border px-2.5 text-muted-foreground transition-colors duration-[var(--duration-fast)] hover:bg-destructive/10 hover:text-destructive"
-              >
-                <X className="h-4 w-4" aria-hidden="true" />
-              </button>
-            </li>
-          ))}
-        </ul>
-        {items.length < EXPERIENCE_MAX_LIST_ITEMS && (
-          <button
-            type="button"
-            onClick={() => setItems([...items, ''])}
-            className="mt-2 flex cursor-pointer items-center gap-1.5 font-ui text-sm font-medium text-secondary transition-colors duration-[var(--duration-fast)] hover:text-primary"
-          >
-            <Plus className="h-4 w-4" aria-hidden="true" />
-            Add point
-          </button>
-        )}
-      </div>
-    )
-  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
