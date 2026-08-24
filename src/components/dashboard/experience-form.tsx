@@ -160,9 +160,32 @@ export function ExperienceForm({
     ]
   )
 
+  function getValidationError(): string | null {
+    if (title.trim().length < 10) {
+      return 'Title must be at least 10 characters'
+    }
+    if (overallRating < 1) {
+      return 'Please select an overall rating (1-10)'
+    }
+    if (!recommendation) {
+      return 'Please select a recommendation level'
+    }
+    if (story.trim().length < EXPERIENCE_MIN_STORY) {
+      return `Story must be at least ${EXPERIENCE_MIN_STORY} characters`
+    }
+    if (isGraduate && hasOutcome && (!outcomeStatus || !fieldRelevance)) {
+      return 'Please select both outcome status and field relevance'
+    }
+    return null
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!valid || status === 'loading') return
+    const validationError = getValidationError()
+    if (validationError || status === 'loading') {
+      setError(validationError)
+      return
+    }
     setError(null)
     setStatus('loading')
 
@@ -619,9 +642,13 @@ try {
           aria-hidden="true"
         />
         <button
-          type="submit"
-          disabled={!valid || status === 'loading'}
-          className="btn-splash flex cursor-pointer items-center justify-center rounded-lg px-8 py-3 font-ui text-sm font-semibold text-accent-foreground shadow-md transition-transform duration-[var(--duration-fast)] hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-60"
+          type="button"
+          onClick={handleSubmit}
+          disabled={status === 'loading'}
+          className={cn(
+            'btn-splash flex items-center justify-center rounded-lg px-8 py-3 font-ui text-sm font-semibold text-accent-foreground shadow-md transition-transform duration-[var(--duration-fast)] hover:-translate-y-px',
+            status === 'loading' && 'cursor-not-allowed opacity-60'
+          )}
         >
           <span className="btn-content flex items-center gap-2">
             {status === 'loading' && (
