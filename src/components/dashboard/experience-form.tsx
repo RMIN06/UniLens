@@ -7,7 +7,8 @@ import {
   AlertCircle,
   Plus,
   X,
-  ShieldCheck,
+  EyeOff,
+  Eye,
   Star,
 } from 'lucide-react'
 import {
@@ -136,6 +137,7 @@ export function ExperienceForm({
   const [fieldRelevance, setFieldRelevance] = useState(
     initial?.outcome?.fieldRelevance ?? ''
   )
+  const [anonymous, setAnonymous] = useState(initial?.anonymous ?? true)
   const [status, setStatus] = useState<'idle' | 'loading'>('idle')
   const [error, setError] = useState<string | null>(null)
 
@@ -164,28 +166,28 @@ export function ExperienceForm({
     setError(null)
     setStatus('loading')
 
-    try {
-      const payload = {
-        title: title.trim(),
-        overallRating,
-        recommendation,
-        wouldChooseAgain: wouldChooseAgain || null,
-        categoryRatings:
-          Object.keys(categoryRatings).length > 0 ? categoryRatings : undefined,
-        story: story.trim(),
-        pros: pros.map((p) => p.trim()).filter(Boolean),
-        cons: cons.map((c) => c.trim()).filter(Boolean),
-        advice: advice.trim() || undefined,
-        outcome:
-          isGraduate && hasOutcome && outcomeStatus && fieldRelevance
-            ? {
-                status: outcomeStatus,
-                details: outcomeDetails.trim() || undefined,
-                fieldRelevance,
-              }
-            : null,
-        anonymous: true,
-      }
+try {
+        const payload = {
+          title: title.trim(),
+          overallRating,
+          recommendation,
+          wouldChooseAgain: wouldChooseAgain || null,
+          categoryRatings:
+            Object.keys(categoryRatings).length > 0 ? categoryRatings : undefined,
+          story: story.trim(),
+          pros: pros.map((p) => p.trim()).filter(Boolean),
+          cons: cons.map((c) => c.trim()).filter(Boolean),
+          advice: advice.trim() || undefined,
+          outcome:
+            isGraduate && hasOutcome && outcomeStatus && fieldRelevance
+              ? {
+                  status: outcomeStatus,
+                  details: outcomeDetails.trim() || undefined,
+                  fieldRelevance,
+                }
+              : null,
+          anonymous,
+        }
 
       const res = await fetch(
         initial?.id ? `/api/experiences/${initial.id}` : '/api/experiences',
@@ -513,18 +515,88 @@ export function ExperienceForm({
       )}
 
       {/* Privacy */}
-      <section className="flex items-start gap-3 rounded-2xl border border-secondary/30 bg-secondary/5 p-5">
-        <ShieldCheck
-          className="mt-0.5 h-5 w-5 shrink-0 text-secondary"
-          aria-hidden="true"
-        />
-        <div>
-          <p className="font-ui text-sm font-medium text-foreground">
-            Always anonymous
-          </p>
-          <p className="text-body-sm mt-1 text-muted-foreground">
-            Shown as &ldquo;Anonymous Undergraduate/Graduate&rdquo;. Only you can see and manage this post.
-          </p>
+      <section className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+        <h3 className="text-label font-medium text-foreground">
+          Who can see your identity?
+        </h3>
+        <p className="text-body-sm mt-1 text-muted-foreground">
+          Choose whether this experience is linked to your name and profile picture.
+        </p>
+
+        <div className="mt-4 grid gap-3">
+          <button
+            type="button"
+            onClick={() => setAnonymous(true)}
+            className={cn(
+              'flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition-all duration-[var(--duration-fast)]',
+              anonymous
+                ? 'border-secondary bg-secondary/5 shadow-[0_0_0_2px_rgba(var(--secondary)/0.2)]'
+                : 'border-border hover:border-muted-foreground/50 hover:bg-muted/30'
+            )}
+            aria-pressed={anonymous}
+          >
+            <div
+              className={cn(
+                'flex shrink-0 items-center justify-center rounded-full p-2',
+                anonymous
+                  ? 'bg-secondary text-secondary-foreground'
+                  : 'bg-muted text-muted-foreground'
+              )}
+            >
+              <EyeOff className="h-5 w-5" aria-hidden="true" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className={cn('font-ui text-sm font-medium', anonymous ? 'text-foreground' : 'text-muted-foreground')}>
+                Post anonymously
+              </p>
+              <p className={cn('text-body-sm mt-0.5', anonymous ? 'text-muted-foreground' : 'text-muted-foreground/70')}>
+                Shown as &ldquo;Anonymous Undergraduate/Graduate&rdquo;. Your name and
+                profile picture are hidden from everyone.
+              </p>
+            </div>
+            {anonymous && (
+              <span className="flex shrink-0 items-center justify-center rounded-full border-2 border-secondary bg-secondary p-0.5">
+                <span className="h-3.5 w-3.5 rounded-full bg-secondary-foreground" />
+              </span>
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setAnonymous(false)}
+            className={cn(
+              'flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition-all duration-[var(--duration-fast)]',
+              !anonymous
+                ? 'border-secondary bg-secondary/5 shadow-[0_0_0_2px_rgba(var(--secondary)/0.2)]'
+                : 'border-border hover:border-muted-foreground/50 hover:bg-muted/30'
+            )}
+            aria-pressed={!anonymous}
+          >
+            <div
+              className={cn(
+                'flex shrink-0 items-center justify-center rounded-full p-2',
+                !anonymous
+                  ? 'bg-secondary text-secondary-foreground'
+                  : 'bg-muted text-muted-foreground'
+              )}
+            >
+              <Eye className="h-5 w-5" aria-hidden="true" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className={cn('font-ui text-sm font-medium', !anonymous ? 'text-foreground' : 'text-muted-foreground')}>
+                Post with your name
+              </p>
+              <p className={cn('text-body-sm mt-0.5', !anonymous ? 'text-muted-foreground' : 'text-muted-foreground/70')}>
+                Your name and Google profile picture will be shown with this post.
+                Other students can see who wrote it.
+              </p>
+            </div>
+            {!anonymous && (
+              <span className="flex shrink-0 items-center justify-center rounded-full border-2 border-secondary bg-secondary p-0.5">
+                <span className="h-3.5 w-3.5 rounded-full bg-secondary-foreground" />
+              </span>
+            )}
+          </button>
         </div>
       </section>
 

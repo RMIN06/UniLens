@@ -55,8 +55,7 @@ export async function PATCH(
   } else if (existing.academicLevel !== "graduate") {
     existing.outcome = null;
   }
-  // All experiences are anonymous — always
-  existing.anonymous = true;
+  existing.anonymous = data.anonymous ?? true;
   existing.editedAt = new Date();
 
   await existing.save();

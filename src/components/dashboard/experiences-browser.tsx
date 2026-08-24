@@ -9,12 +9,15 @@ import {
   Trash2,
   BriefcaseBusiness,
   ChevronDown,
+  UserCircle,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 type ExperienceItem = {
   id: string
   displayName: string
+  authorImage: string | null
+  anonymous: boolean
   isOwn: boolean
   academicLevel: 'undergraduate' | 'graduate' | null
   university: string
@@ -243,6 +246,24 @@ export function ExperiencesBrowser() {
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
+                    {!it.anonymous ? (
+                      it.authorImage ? (
+                        <img
+                          src={it.authorImage}
+                          alt=""
+                          className="h-6 w-6 rounded-full object-cover"
+                          referrerPolicy="no-referrer"
+                        />
+                      ) : (
+                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 font-ui text-[11px] font-semibold text-primary">
+                          {it.displayName.charAt(0).toUpperCase()}
+                        </span>
+                      )
+                    ) : (
+                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-muted">
+                        <UserCircle className="h-3.5 w-3.5 text-muted-foreground" aria-hidden="true" />
+                      </span>
+                    )}
                     <span className="font-ui text-xs font-medium text-muted-foreground">
                       {it.displayName}
                     </span>

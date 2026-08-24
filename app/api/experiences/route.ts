@@ -65,29 +65,53 @@ export async function GET(request: Request) {
     Experience.countDocuments(query),
   ]);
 
-  // Fully anonymous — never expose the author's identity, even to themselves in browse view
-  const experiences = docs.map((d) => ({
-    id: String(d._id),
-    displayName: `Anonymous ${d.academicLevel === "graduate" ? "Graduate" : "Undergraduate"}`,
-    isOwn: String(d.author) === session.user.id,
-    academicLevel: d.academicLevel,
-    university: d.university,
-    program: d.program,
-    graduationYear: d.graduationYear,
-    title: d.title,
-    overallRating: d.overallRating,
-    recommendation: d.recommendation,
-    wouldChooseAgain: d.wouldChooseAgain,
-    categoryRatings: d.categoryRatings ?? null,
-    story: d.story,
-    pros: d.pros,
-    cons: d.cons,
-    advice: d.advice,
-    outcome: d.outcome ?? null,
-    helpfulCount: d.helpfulCount,
-    editedAt: d.editedAt,
-    createdAt: d.createdAt,
-  }));
+  // Fetch author info for non-anonymous experiences
+  const nonAnonAuthorIds = [
+    ...new Set(
+      docs
+        .filter((d) => d.anonymous === false)
+        .map((d) => String(d.author))
+    ),
+  ];
+
+  const authorMap = new Map<string, { name: string; image: string | null }>();
+  if (nonAnonAuthorIds.length > 0) {
+    const authors = await User.find({ _id: { $in: nonAnonAuthorIds } })
+      .select("name image")
+      .lean();
+    for (const a of authors) {
+      authorMap.set(String(a._id), { name: a.name, image: a.image ?? null });
+    }
+  }
+
+  const experiences = docs.map((d) => {
+    const isAnon = d.anonymous !== false;
+    const author = isAnon ? null : authorMap.get(String(d.author)) ?? null;
+    return {
+      id: String(d._id),
+      displayName: author?.name ?? `Anonymous ${d.academicLevel === "graduate" ? "Graduate" : "Undergraduate"}`,
+      authorImage: author?.image ?? null,
+      anonymous: isAnon,
+      isOwn: String(d.author) === session.user.id,
+      academicLevel: d.academicLevel,
+      university: d.university,
+      program: d.program,
+      graduationYear: d.graduationYear,
+      title: d.title,
+      overallRating: d.overallRating,
+      recommendation: d.recommendation,
+      wouldChooseAgain: d.wouldChooseAgain,
+      categoryRatings: d.categoryRatings ?? null,
+      story: d.story,
+      pros: d.pros,
+      cons: d.cons,
+      advice: d.advice,
+      outcome: d.outcome ?? null,
+      helpfulCount: d.helpfulCount,
+      editedAt: d.editedAt,
+      createdAt: d.createdAt,
+    };
+  });
 
   return NextResponse.json({
     experiences,
@@ -153,8 +177,7 @@ export async function POST(request: Request) {
     university: user.university,
     program: user.program,
     graduationYear: user.graduationYear ?? null,
-    // All experiences are anonymous — always
-    anonymous: true,
+    anonymous: data.anonymous ?? true,
   });
 
   return NextResponse.json(
