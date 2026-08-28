@@ -1,4 +1,11 @@
-# UniLens
+```
+██╗   ██╗███╗   ██╗██╗██╗     ███████╗███╗   ██╗███████╗
+██║   ██║████╗  ██║██║██║     ██╔════╝████╗  ██║██╔════╝
+██║   ██║██╔██╗ ██║██║██║     █████╗  ██╔██╗ ██║███████╗
+██║   ██║██║╚██╗██║██║██║     ██╔══╝  ██║╚██╗██║╚════██║
+╚██████╔╝██║ ╚████║██║███████╗███████╗██║ ╚████║███████║
+ ╚═════╝ ╚═╝  ╚═══╝╚═╝╚══════╝╚══════╝╚═╝  ╚═══╝╚══════╝
+```
 
 Real student experience, real university choices.
 
@@ -49,20 +56,32 @@ The platform evaluates submitted experiences using the following signals before 
 
 ## Technology Stack
 
-| Category | Technology |
-|---|---|
-| Framework | Next.js 14 (App Router) |
-| Language | TypeScript |
-| Styling | Tailwind CSS 4 |
-| 3D Rendering | React Three Fiber, drei, Three.js |
-| Animation | Framer Motion |
-| Authentication | NextAuth |
-| Database | MongoDB (via Mongoose) |
-| Password Hashing | bcryptjs |
-| Schema Validation | Zod |
-| Icons | lucide-react |
-| Linting and Formatting | ESLint, Prettier |
-| Deployment | Vercel |
+### Framework and Language
+
+![Next.js](https://img.shields.io/badge/Next.js_14-000000?style=for-the-badge&logo=next.js&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+
+### Styling and Animation
+
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS_4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![Framer Motion](https://img.shields.io/badge/Framer_Motion-0055FF?style=for-the-badge&logo=framer&logoColor=white)
+
+### 3D Rendering
+
+![Three.js](https://img.shields.io/badge/Three.js-000000?style=for-the-badge&logo=three.js&logoColor=white)
+![React Three Fiber](https://img.shields.io/badge/React_Three_Fiber-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+
+### Authentication and Data
+
+![NextAuth](https://img.shields.io/badge/NextAuth-000000?style=for-the-badge&logo=auth0&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
+![Zod](https://img.shields.io/badge/Zod-3E67B1?style=for-the-badge&logo=zod&logoColor=white)
+
+### Tooling
+
+![ESLint](https://img.shields.io/badge/ESLint-4B32C3?style=for-the-badge&logo=eslint&logoColor=white)
+![Prettier](https://img.shields.io/badge/Prettier-F7B93E?style=for-the-badge&logo=prettier&logoColor=black)
+![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
 
 ---
 
@@ -86,70 +105,10 @@ UniLens/
 
 ---
 
-## Getting Started
+## License and Usage Restrictions
 
-### Prerequisites
+This project is proprietary. It is not licensed under MIT, Apache, ISC, or any other open source license, regardless of what any placeholder value in the project configuration may state.
 
-The following must be available on the local machine before setup.
+No permission is granted to any party to use, copy, modify, merge, publish, distribute, sublicense, deploy, or sell copies of this software, in whole or in part, for any purpose. Viewing the source code does not constitute a license to use it. All rights are reserved by the author.
 
-| Requirement | Notes |
-|---|---|
-| Node.js | Version 18 or later |
-| npm | Included with Node.js |
-| MongoDB | A running instance or a hosted connection string |
-
-### Installation
-
-1. Clone the repository.
-
-   ```
-   git clone https://github.com/RMIN06/UniLens.git
-   cd UniLens
-   ```
-
-2. Install the project dependencies.
-
-   ```
-   npm install
-   ```
-
-3. Create a local environment file and provide the required values.
-
-   ```
-   MONGODB_URI=your_mongodb_connection_string
-   NEXTAUTH_SECRET=your_nextauth_secret
-   NEXTAUTH_URL=http://localhost:3002
-   ```
-
-4. Start the development server.
-
-   ```
-   npm run dev
-   ```
-
-5. Open the application in a browser at:
-
-   ```
-   http://localhost:3002
-   ```
-
-### Available Scripts
-
-| Command | Description |
-|---|---|
-| `npm run dev` | Starts the development server on port 3002 |
-| `npm run build` | Builds the application for production |
-| `npm run start` | Runs the production build on port 3002 |
-| `npm run lint` | Runs the Next.js linter against the codebase |
-
----
-
-## Deployment
-
-The application is deployed on Vercel and is configured to build automatically from the `main` branch. Any Next.js compatible hosting provider can also be used by running the build and start commands listed above, provided the required environment variables are configured on that platform.
-
----
-
-## License
-
-The package configuration declares an ISC license. No formal license file is currently included in the repository. Until a license file is added, all rights to the source code are reserved by the author.
+Any use of this codebase requires prior written permission from the author.
