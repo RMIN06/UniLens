@@ -4,7 +4,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import Link from 'next/link';
 import { HeroBackground3D } from './hero-background-3d';
 import { Typewriter } from './typewriter';
-import { LiveCounter } from './live-counter';
+import { ExperienceCount } from './experience-count';
 import { ArrowRight } from 'lucide-react';
 
 export function HeroSection() {
@@ -111,10 +111,7 @@ export function HeroSection() {
             {...fadeIn(0.5)}
             className="flex flex-wrap items-center justify-center gap-8 md:gap-12 text-sm"
           >
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <span className="font-display text-heading-md text-foreground">12,480+</span>
-              <span className="font-body text-body-sm">Verified Experiences</span>
-            </div>
+            <ExperienceCount />
             <div className="flex items-center gap-2 text-muted-foreground">
               <span className="font-display text-heading-md text-foreground">150+</span>
               <span className="font-body text-body-sm">Pakistani Universities</span>
