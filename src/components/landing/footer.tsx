@@ -3,7 +3,7 @@
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import Link from 'next/link';
-import { GitBranch, X, Link as LinkIcon, Mail } from 'lucide-react';
+import { GitBranch, Mail } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CookiePreferencesButton } from '@/components/landing/cookie-preferences';
 
@@ -25,10 +25,8 @@ export function Footer({ className }: FooterProps) {
   ];
 
   const socialLinks = [
-    { icon: X, label: 'X', href: '#' },
-    { icon: GitBranch, label: 'GitHub', href: '#' },
-    { icon: LinkIcon, label: 'LinkedIn', href: '#' },
-    { icon: Mail, label: 'Email', href: 'mailto:hello@unilens.app' },
+    { icon: GitBranch, label: 'GitHub', href: 'https://github.com/RMIN06/UniLens' },
+    { icon: Mail, label: 'Email', href: 'mailto:l250716@lhr.nu.edu.pk' },
   ];
 
   return (
